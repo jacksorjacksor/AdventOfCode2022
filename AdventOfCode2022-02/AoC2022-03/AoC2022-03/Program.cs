@@ -43,32 +43,62 @@ What is the sum of the priorities of those item types?
 
 var result = 0;
 
-
+var bag1 = "";
+var bag2 = "";
+var bag3 = "";
 
 foreach (var line in file)
 {
-    var sizeOfCompartment = line.Length / 2;
-    var compartmentA = line.Substring(0, sizeOfCompartment);
-    var compartmentB = line.Substring(sizeOfCompartment);
-
-    foreach (var item in compartmentA)
+    if (bag1 == "")
     {
-        if (compartmentB.Contains(item))
+        bag1 = line;
+        Console.WriteLine("Bag1: " + bag1);
+    }
+
+    else if (bag2 == "")
+    {
+        bag2 = line;
+        Console.WriteLine("Bag2: " + bag2);
+    }
+
+    else
+    {
+        bag3 = line;
+        Console.WriteLine("Bag3: " + bag3);
+        // All three bags must now be assigned
+        // Find character
+        foreach (var item in bag1)
         {
-            var outputNumber = (int)item - 64;
-            if (outputNumber < 27)
+            if (bag2.Contains(item) && bag3.Contains(item))
             {
-                outputNumber += 26;
+                result += AssignPriority(item);
+                break;
             }
-            else
-            {
-                outputNumber -= 32;
-            }
-            result += outputNumber;
-            break;
         }
+
+        Console.WriteLine("Reset!");
+
+        // Reset
+        bag1 = "";
+        bag2 = "";
+        bag3 = "";
     }
 }
 
 Console.WriteLine(result);
 
+static int AssignPriority(char a)
+{
+    var outputNumber = (int)a - 64;
+    if (outputNumber < 27)
+    {
+        outputNumber += 26;
+    }
+    else
+    {
+        outputNumber -= 32;
+    }
+
+    Console.WriteLine("Item: " + a + " | Priority: " + outputNumber);
+    return outputNumber;
+}
