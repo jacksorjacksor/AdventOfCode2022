@@ -38,22 +38,21 @@ Find the Elf carrying the most Calories. How many total Calories is that Elf car
  */
 
 
-string path = "C:\\Users\\Richard\\OneDrive\\AZ-204\\PhotoProject\\AdventOfCode01\\AdventOfCode01\\AoCDay01.csv";
+using System.Collections;
 
-string[] lines = System.IO.File.ReadAllLines(path);
+var path = "C:\\Users\\Richard\\OneDrive\\AZ-204\\PhotoProject\\AdventOfCode01\\AdventOfCode01\\AoCDay01.csv";
 
-var elfNumber = 1;
+var lines = System.IO.File.ReadAllLines(path);
+
+var listOfCalories = new List<int>();
+
 var elfCalories = 0;
-
-var highestElfCalories = 0;
-var highestElfNumber = 0;
 
 foreach (var line in lines)
 {
     if (line.Equals(""))
     {
-        (highestElfCalories, highestElfNumber) = ElfCheck(elfNumber, elfCalories);
-        elfNumber++;
+        listOfCalories.Add(elfCalories);
         elfCalories = 0;
     }
     else
@@ -62,15 +61,10 @@ foreach (var line in lines)
     }
 }
 
-(int HighestElfCalories, int HighestElfNumber) ElfCheck(int elfCheckNumber, int elfCheckCalories)
-{
-    if (elfCheckCalories > highestElfCalories)
-    {
-        highestElfCalories = elfCheckCalories;
-        highestElfNumber = elfCheckNumber;
-    }
+listOfCalories.Sort();
+listOfCalories.Reverse();
+var output = listOfCalories.GetRange(0, 3);
 
-    return (highestElfCalories, highestElfNumber);
-}
+var result = output.Sum(Convert.ToInt32);
 
-Console.WriteLine(highestElfCalories);
+Console.WriteLine(result);
