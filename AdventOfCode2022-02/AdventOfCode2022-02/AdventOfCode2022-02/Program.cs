@@ -6,60 +6,79 @@ var lines = System.IO.File.ReadAllLines(path);
 var result = 0;
 
 /*
- *  A X = Rock
- *  B Y = Paper
- *  C Z = Scissors
+ *  A = Rock
+ *  B = Paper
+ *  C = Scissors
  *
+ *  X = Lose
+ *  Y = Draw
+ *  Z = Win
  */
+
+var dictionaryOfOutcomePoints = new Dictionary<string, int>
+{
+    { "X", 0 }, // Lose
+    { "Y", 3 }, // Draw
+    { "Z", 6 }  // Win
+};
 
 var dictionaryOfChoicePoints = new Dictionary<string, int>
 {
-    { "X", 1 },
-    { "Y", 2 },
-    { "Z", 3 }
+    { "Rock", 1 },
+    { "Paper", 2 },
+    { "Scissors", 3 }
 };
+
 
 
 foreach (var line in lines)
 {
-    var ourChoices = line.Split(' ');
-    result += FightBitches(ourChoices[0], ourChoices[1]) + dictionaryOfChoicePoints[ourChoices[1]];
+    var ourInstructions = line.Split(' ');
+    // Points for our outcome
+    result += dictionaryOfOutcomePoints[ourInstructions[1]];
+
+    // Work out what our choice needs to be
+    Console.WriteLine(dictionaryOfChoicePoints[FightBitches(ourInstructions[0], ourInstructions[1])]);
+    result += dictionaryOfChoicePoints[FightBitches(ourInstructions[0], ourInstructions[1])];
 }
 
-int FightBitches(string opponent, string hero)
+static string FightBitches(string opponent, string outcome)
 {
-    switch (opponent)
+    switch (opponent)           // WeHaveTo ('L', 'D', 'W')
     {
-        case "A":
-            switch (hero)
+        case "A":               // Rock ("Scissors", "Rock", "Paper")
+            return outcome switch
             {
-                case "X":
-                    return 3;
-                case "Y":
-                    return 6;
-                default:
-                    return 0;
+                "X" => // Lose
+                    "Scissors",
+                "Y" => // Draw
+                    "Rock",
+                _ => "Paper"
             };
-        case "B":
-            switch (hero)
+
+            ;
+        case "B":               // Paper ("Rock", "Paper", "Scissors")
+            return outcome switch
             {
-                case "X":
-                    return 0;
-                case "Y":
-                    return 3;
-                default:
-                    return 6;
+                "X" => // Lose
+                    "Rock",
+                "Y" => // Draw
+                    "Paper",
+                _ => "Scissors"
             };
-        default:
-            switch (hero)
+
+            ;
+        default:                // Scissors ("Paper", "Scissors", "Rock")
+            return outcome switch
             {
-                case "X":
-                    return 6;
-                case "Y":
-                    return 0;
-                default:
-                    return 3;
+                "X" => // Lose
+                    "Paper",
+                "Y" => // Draw
+                    "Scissors",
+                _ => "Rock"
             };
+
+            ;
     }
 }
 
