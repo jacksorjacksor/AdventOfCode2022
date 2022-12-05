@@ -17,7 +17,14 @@ foreach (var line in file)
     var part2a = int.Parse(part2.Split("-")[0]);
     var part2b = int.Parse(part2.Split("-")[1]);
 
-    if ((part1a <= part2a && part1b >= part2b) || (part2a <= part1a && part2b >= part1b)) outcome++;
+    if ((part2a <= part1a && part1a <= part2b)
+        || (part2a <= part1b && part1b <= part2b)
+        || (part1a <= part2a && part2a <= part1b)
+        || (part1a <= part2b && part2b <= part1b)
+       )
+    {
+        outcome++;
+    }
 }
 
 Console.WriteLine(outcome);
