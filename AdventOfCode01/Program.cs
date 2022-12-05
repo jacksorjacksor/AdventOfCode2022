@@ -38,11 +38,9 @@ Find the Elf carrying the most Calories. How many total Calories is that Elf car
  */
 
 
-using System.Collections;
+var path = Path.Combine(Directory.GetCurrentDirectory(), "AoCDay01.csv");
 
-var path = "C:\\Users\\Richard\\OneDrive\\AZ-204\\PhotoProject\\AdventOfCode01\\AdventOfCode01\\AoCDay01.csv";
-
-var lines = System.IO.File.ReadAllLines(path);
+var lines = File.ReadAllLines(path);
 
 var listOfCalories = new List<int>();
 
