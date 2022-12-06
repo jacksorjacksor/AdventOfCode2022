@@ -5,15 +5,15 @@ var input = "qvllndllhzhfzhhdzhddhjdjggvnvhvccmffwllqgqmmfjfqfhhtrrzczjczzlplddf
 
 for (int i = 0; i < input.Length; i++)
 {
-    var substring = input.Substring(i, 4);
+    var substring = input.Substring(i, 14);
     var myList = new List<char>()
     {
-        substring[0], substring[1], substring[2], substring[3]
+        substring[0], substring[1], substring[2], substring[3], substring[4],substring[5],substring[6],substring[7],substring[8],substring[9],substring[10],substring[11],substring[12],substring[13]
     };
 
     if (myList.Distinct().Count() == myList.Count())
     {
-        Console.WriteLine(i+4);
+        Console.WriteLine(i+14);
         break;
     }
 }
