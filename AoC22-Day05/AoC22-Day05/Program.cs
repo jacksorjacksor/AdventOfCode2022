@@ -3,7 +3,7 @@
 using System.Collections;
 using System.Linq;
 
-// var path = Path.Combine(Directory.GetCurrentDirectory(), "BasicInput.csv");
+// var path = Path.Combine(Directory.GetCurrentDirectory(), "BasicInput.csv");//
 var path = Path.Combine(Directory.GetCurrentDirectory(), "AoC22-Day05-input.csv");
 var file = File.ReadAllLines(path);
 
@@ -68,7 +68,7 @@ void SetBlock(string line)
 
 void ReadInstructions(string line)
 {
-    FullList();
+    FullList(listOfBlocks);
 
     var lineInstructions = line.Split(" ");
     var moveAmount = int.Parse(lineInstructions[1]) ;
@@ -77,32 +77,36 @@ void ReadInstructions(string line)
 
     Console.WriteLine($"Instructions: Move amount: {moveAmount} | colToMoveFrom: {colToMoveFrom} | colToMoveTo: {colToMoveTo}");
     
+    Console.WriteLine($"Move Amount: {moveAmount}");
 
-    for (var i = 0; i < moveAmount; i++)
+    Console.WriteLine($"ColToMoveFrom: {colToMoveFrom}");
+    // Find the columnToMoveFrom and the lowest row value
+    var blocksInColumnToMove = from Block b in listOfBlocks
+                                    where b.ColNumber == colToMoveFrom
+                                    orderby b.RowNumber ascending 
+                                    select b;
+
+    var blocksToMove = blocksInColumnToMove.Take(moveAmount);
+    var highestRowNumberInBlocksToMove = blocksToMove.Last().RowNumber;
+
+    FullList(blocksToMove);
+    // Find the columnToMoveTo and the lowest value
+    var blocksInColumnToAddTo = from Block b in listOfBlocks
+                                    where b.ColNumber == colToMoveTo
+                                    orderby b.RowNumber ascending
+                                    select b;
+
+    // -1 to whatever that value is and change the block's details.
+    var lowestRowValue = !blocksInColumnToAddTo.Any() ? bottomRow : blocksInColumnToAddTo.First().RowNumber - 1;
+
+    foreach (var block in blocksToMove)
     {
-        Console.WriteLine($"Move Amount: {i}");
-
-        Console.WriteLine($"ColToMoveFrom: {colToMoveFrom}");
-        // Find the columnToMoveFrom and the lowest row value
-        var blocksInColumnToMove = from Block b in listOfBlocks
-                                        where b.ColNumber == colToMoveFrom
-                                        orderby b.RowNumber ascending 
-                                        select b;
-        var blockToMove = blocksInColumnToMove.First();
-        Console.WriteLine($"Moving {blockToMove}");
-        // Find the columnToMoveTo and the lowest value
-        var blocksInColumnToAddTo = from Block b in listOfBlocks
-                                        where b.ColNumber == colToMoveTo
-                                        orderby b.RowNumber ascending
-                                        select b;
-
-        // -1 to whatever that value is and change the block's details.
-        var lowestRowValue = !blocksInColumnToAddTo.Any() ? bottomRow : blocksInColumnToAddTo.First().RowNumber - 1;
-
-        blockToMove.ColNumber = colToMoveTo;
-        blockToMove.RowNumber = lowestRowValue;
-        Console.WriteLine($"Have moved {blockToMove}");
+        block.ColNumber = colToMoveTo;
+        block.RowNumber = lowestRowValue + block.RowNumber - highestRowNumberInBlocksToMove;
+        Console.WriteLine($"Have moved {block}");
     }
+
+    
 }
 
 
@@ -141,10 +145,13 @@ for (int i = 1; i <= numberOfColumns; i++)
 Console.WriteLine($"Final outcome: {finalOutcome}");
 
 
-void FullList()
+void FullList(IEnumerable list)
 {
+    var sortedList = from Block b in list
+                 orderby b.ColNumber ascending, b.RowNumber ascending
+                select b;
     Console.WriteLine("Full list:");
-    foreach (var block in listOfBlocks)
+    foreach (var block in sortedList)
     {
         Console.WriteLine(block);
     }
