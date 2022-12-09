@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="AoC22-Day07-Input.txt">
+    <None Update="AoC22-Day07-Input.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="AoC22-Day07-SampleInput.csv">

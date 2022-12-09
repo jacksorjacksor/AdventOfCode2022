@@ -48,86 +48,134 @@ using System.Reflection;
 using System.Threading.Channels;
 
 
-var path = Path.Combine(Directory.GetCurrentDirectory(), "AoC22-Day07-SampleInput.csv");
+var path = Path.Combine(Directory.GetCurrentDirectory(), "AoC22-Day07-Input.csv");
 var file = File.ReadAllLines(path);
 
 var currentLevel = 0;
+var highestLevel = 0;
 var currentDir = "";
 
-var arrayOfDictionaries = new Dictionary<string, Dir>();
-
+var listOfDir = new List<Dir>();
 
 foreach (var line in file)
 {
+    Console.WriteLine(line);
     if (line.StartsWith("$"))
     {
-        var body = line.Substring(2);
+        var body = line[2..].Trim();
         if (body.StartsWith("cd"))
         {
             switch (body)
             {
                 case "cd /":
                     currentLevel = 0;
-                    currentDir = body.Substring(2); // Assuming you can only find what is there
-
-                    if (!arrayOfDictionaries.ContainsKey(currentDir)) arrayOfDictionaries.Add(currentDir, new Dir
+                    currentDir = body[2..].Trim(); // Assuming you can only find what is there
+                    if(listOfDir.All(c => c.Name != currentDir)) listOfDir.Add(new Dir
                     {
-                        name=currentDir, children=new ArrayList(), size=0
+                        Name = currentDir,
+                        Children = new List<string>(),
+                        Level = currentLevel,
+                        Size = 0
                     });
+
                     break;
                 case "cd ..":
                     currentLevel--;
                     break;
                 default:
                     currentLevel++;
-                    currentDir = body.Substring(2); // Assuming you can only find what is there
-                    if (!arrayOfDictionaries.ContainsKey(currentDir)) arrayOfDictionaries.Add(currentDir, new Dir
+                    highestLevel = UpdateHighestLevel(currentLevel);
+                    currentDir = body[2..].Trim(); // Assuming you can only find what is there
+                    if (listOfDir.All(c => c.Name != currentDir)) listOfDir.Add(new Dir
                     {
-                        name = currentDir,
-                        children = new ArrayList(),
-                        size = 0
-                    }); 
+                        Name = currentDir,
+                        Children = new List<string>(),
+                        Level = currentLevel,
+                        Size = 0
+                    });
                     break;
             }
         }
     }
     else
     {
-        // values being shown
-        if (line.StartsWith("d"))
+        var lineSplit = line.Split(' ');
+        var parentDir = listOfDir.Find(x => x.Name == currentDir);
+        switch (lineSplit[0])
         {
+            case "dir":
+                parentDir?.Children.Add(lineSplit[1]);
+                break;
+            default:
+                if (parentDir != null) parentDir.Size += int.Parse(lineSplit[0]);
+                break;
         }
     }
 }
 
-foreach (var item in arrayOfDictionaries)
+int UpdateHighestLevel(int currentLevel)
 {
-    Console.WriteLine(item.Value);
+    if(currentLevel > highestLevel)
+    {
+        return currentLevel;
+    }
+    else
+    {
+        return highestLevel;
+    }
 }
 
-// List all the files and directories
+// Go back through the highest levels, add the values of their children to their Sizes
+
+for (int i = highestLevel; i >= 0; i--)
+{
+    foreach (var dir in listOfDir.Where(x=> x.Level.Equals(i)))
+    {
+        // Go through children
+        foreach (var childName in dir.Children)
+        {
+            foreach (var child in listOfDir.Where(child => child.Name.Equals(childName)))
+            {
+                dir.Size += child.Size;
+            }
+        }
+    }
+}
+
+foreach (var item in listOfDir)
+{
+    Console.WriteLine(item);
+}
 
 
+Console.WriteLine("*****");
 
-// Find the level you're on
-// Root = 0, "/" sets to 1, "[letter]" adds 1, ".." subtracts 1
-// ls is ignored
+// Remove any where the Size>=100000
+var grandTotal = 0;
+foreach (var dir in listOfDir.Where(x => x.Size <= 100000))
+{
+    Console.WriteLine(dir);
+    grandTotal += dir.Size;
+}
+
+Console.WriteLine(grandTotal);
+
+// Too low: 1041286 // 1041286
 
 
 internal class Dir
 {
-    public string name { set; get; }
-    public ArrayList children { set; get; }
+    public string Name { set; get; }
+    public List<string> Children { set; get; }
 
-    public int size { set; get; }
+    public int Size { set; get; }
+
+    public int Level { set; get; }
 
     public override string ToString()
     {
-        var childrenOutput = "";
-        foreach (var child in children)
-        {
-            childrenOutput += child + ",";
-        }
-        return $"Name: {name} | Children: {childrenOutput} | Size: {size}";
+        var childrenOutput = string.Join(",", Children);
+
+        return $"Name: {Name} | Children: {childrenOutput} | Size: {Size} | Level: {Level}";
     }
 }
