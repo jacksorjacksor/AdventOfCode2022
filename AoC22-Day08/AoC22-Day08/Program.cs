@@ -75,17 +75,31 @@ for (var r = 0; r < rowSize; r++)
     for (var c = 0; c < colSize; c++)
     {
         var target = forestList[r][c];
-        bool spottedTop = CheckTop(r,c,target);
-        bool spottedBottom = CheckBottom(r, c, target);
-        bool spottedRight = CheckRight(r,c,target);
-        bool spottedLeft = CheckLeft(r, c, target);
-        if (spottedTop || spottedBottom || spottedRight || spottedLeft)
+        if (r.Equals(0) || r.Equals(rowSize-1) || c.Equals(0) || c.Equals(colSize-1))
         {
-            Console.WriteLine($"R{r}C{c} ({target})");
-            /*
-            Console.WriteLine("Spotted!");
-            */
             counterOfVisible++;
+        }
+        else
+        {
+
+            bool spottedTop = CheckTop(r, c, target);
+            bool spottedBottom = CheckBottom(r, c, target);
+            bool spottedRight = CheckRight(r, c, target);
+            bool spottedLeft = CheckLeft(r, c, target);
+
+            // spottedTop = false;
+            // spottedBottom = false;
+            // spottedRight = false;
+            // spottedLeft = false;
+
+            if (spottedTop || spottedBottom || spottedRight || spottedLeft)
+            {
+                Console.WriteLine($"R{r}C{c} ({target})");
+                /*
+                Console.WriteLine("Spotted!");
+                */
+                counterOfVisible++;
+            }
         }
         /*
         Console.WriteLine("****");
@@ -95,23 +109,29 @@ for (var r = 0; r < rowSize; r++)
 
 Console.WriteLine($"Visible: {counterOfVisible}");
 // 669 - too low
+// 2726 - too high
 bool CheckTop(int row, int col, double targetSquare)
 {
-    /*
     Console.WriteLine(">> CHECKS <<");
-    Console.WriteLine($"Target Square: R{row}C{col} ({targetSquare})");
-    */
-    double obscuringTreeValue = 0;
-    double previousTreeValue = -1;
+    double obscuringTreeValue = -1;
     for (int i = 0; i < row; i++)
-    {
+    {   
         obscuringTreeValue = forestList[i][col];
-        if (targetSquare<= obscuringTreeValue || obscuringTreeValue<previousTreeValue)
+        /*
+        Console.WriteLine($"Target Square: R{row}C{col} ({targetSquare})");
+        Console.WriteLine($"Obscuring: R{i}C{col} ({obscuringTreeValue})");
+        */
+
+        if (targetSquare <= obscuringTreeValue )
         {
+            /*
+            Console.WriteLine("XXX FALSE XXX");
+            */
             return false;
         }
-        previousTreeValue = obscuringTreeValue;
     }
+
+    Console.WriteLine("! ! ! true ! ! !");
     return true;
 }
 
@@ -121,16 +141,14 @@ bool CheckRight(int row, int col, double targetSquare)
     Console.WriteLine(">> CHECKS <<");
     Console.WriteLine($"Target Square: R{row}C{col} ({targetSquare})");
     */
-    double obscuringTreeValue = 0;
-    double previousTreeValue = -1;
+    double obscuringTreeValue = -1;
     for (int i = colSize - 1; i > col; i--)
     {
         obscuringTreeValue = forestList[row][i];
-        if (targetSquare <= obscuringTreeValue || obscuringTreeValue < previousTreeValue)
+        if (targetSquare <= obscuringTreeValue)
         {
             return false;
         }
-        previousTreeValue = obscuringTreeValue;
     }
     return true;
 }
@@ -140,16 +158,14 @@ bool CheckBottom(int row, int col, double targetSquare)
     Console.WriteLine(">> CHECKS <<");
     Console.WriteLine($"Target Square: R{row}C{col} ({targetSquare})");
     */
-    double obscuringTreeValue = 0;
-    double previousTreeValue = -1;
+    double obscuringTreeValue = -1;
     for (int i = rowSize-1; i > row; i--)
     {
         obscuringTreeValue = forestList[i][col];
-        if (targetSquare <= obscuringTreeValue || obscuringTreeValue < previousTreeValue)
+        if (targetSquare <= obscuringTreeValue)
         {
             return false;
         }
-        previousTreeValue = obscuringTreeValue;
     }
     return true;
 }
@@ -161,16 +177,14 @@ bool CheckLeft(int row, int col, double targetSquare)
     Console.WriteLine(">> CHECKS <<");
     Console.WriteLine($"Target Square: R{row}C{col} ({targetSquare})");
     */
-    double obscuringTreeValue = 0;
-    double previousTreeValue = -1;
+    double obscuringTreeValue = -1;
     for (int i = 0; i < col; i++)
     {
         obscuringTreeValue = forestList[row][i];
-        if (targetSquare <= obscuringTreeValue || obscuringTreeValue < previousTreeValue)
+        if (targetSquare <= obscuringTreeValue)
         {
             return false;
         }
-        previousTreeValue = obscuringTreeValue;
     }
     return true;
 }
