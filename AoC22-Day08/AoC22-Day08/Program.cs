@@ -34,6 +34,7 @@ With 16 trees visible on the edge and another 5 visible in the interior, a total
 
 // RC crawling!
 
+
 // Get size of thing
 var colSize = 0;
 var rowSize = 0;
@@ -66,125 +67,101 @@ foreach (var line in file)
     forestList.Add(forestRow);
 }
 
+int scenicScore;
+int topScore;
+int bottomScore;
+int rightScore;
+int leftScore;
 
-// Checking to see trees
-var counterOfVisible = 0;
+var highestScenicScore = 0;
+
 for (var r = 0; r < rowSize; r++)
 {
     var row = forestList[r];
     for (var c = 0; c < colSize; c++)
     {
+        scenicScore = 0;
+        
         var target = forestList[r][c];
-        if (r.Equals(0) || r.Equals(rowSize-1) || c.Equals(0) || c.Equals(colSize-1))
-        {
-            counterOfVisible++;
-        }
-        else
-        {
 
-            bool spottedTop = CheckTop(r, c, target);
-            bool spottedBottom = CheckBottom(r, c, target);
-            bool spottedRight = CheckRight(r, c, target);
-            bool spottedLeft = CheckLeft(r, c, target);
+        topScore = CheckTop(r, c, target);
+        bottomScore = CheckBottom(r, c, target);
+        rightScore = CheckRight(r, c, target);
+        leftScore = CheckLeft(r, c, target);
 
-            // spottedTop = false;
-            // spottedBottom = false;
-            // spottedRight = false;
-            // spottedLeft = false;
+        scenicScore = rightScore * leftScore * topScore * bottomScore;
 
-            if (spottedTop || spottedBottom || spottedRight || spottedLeft)
-            {
-                Console.WriteLine($"R{r}C{c} ({target})");
-                /*
-                Console.WriteLine("Spotted!");
-                */
-                counterOfVisible++;
-            }
-        }
-        /*
-        Console.WriteLine("****");
-    */
+        Console.WriteLine($"Scenic score for Target Square:R{r}C{c} ({target}) = {scenicScore}");
+
+        if (scenicScore > highestScenicScore) highestScenicScore = scenicScore;
+        Console.WriteLine($"> Highest: {highestScenicScore}");
     }
 }
 
-Console.WriteLine($"Visible: {counterOfVisible}");
-// 669 - too low
-// 2726 - too high
-bool CheckTop(int row, int col, double targetSquare)
+int CheckTop(int row, int col, double targetSquare)
 {
-    Console.WriteLine(">> CHECKS <<");
-    double obscuringTreeValue = -1;
-    for (int i = 0; i < row; i++)
-    {   
-        obscuringTreeValue = forestList[i][col];
-        /*
-        Console.WriteLine($"Target Square: R{row}C{col} ({targetSquare})");
-        Console.WriteLine($"Obscuring: R{i}C{col} ({obscuringTreeValue})");
-        */
+    var score = 0;
+    // "Stop if you reach an edge..."
+    if (row.Equals(0)) return score; // No trees to see
 
-        if (targetSquare <= obscuringTreeValue )
-        {
-            /*
-            Console.WriteLine("XXX FALSE XXX");
-            */
-            return false;
-        }
-    }
-
-    Console.WriteLine("! ! ! true ! ! !");
-    return true;
-}
-
-bool CheckRight(int row, int col, double targetSquare)
-{
-    /*
-    Console.WriteLine(">> CHECKS <<");
-    Console.WriteLine($"Target Square: R{row}C{col} ({targetSquare})");
-    */
-    double obscuringTreeValue = -1;
-    for (int i = colSize - 1; i > col; i--)
+    for (int i = row-1; i > -1; i--)
     {
-        obscuringTreeValue = forestList[row][i];
-        if (targetSquare <= obscuringTreeValue)
-        {
-            return false;
-        }
+        score++; // You can always see the next tree - but the one after? Perhaps not...!
+        var obscuringTreeValue = forestList[i][col];
+
+        //  "or at the first tree that is the same height or taller than the tree under consideration"
+        if (obscuringTreeValue >= targetSquare) return score;
     }
-    return true;
+    return score;
 }
-bool CheckBottom(int row, int col, double targetSquare)
+
+int CheckRight(int row, int col, double targetSquare)
 {
-    /*
-    Console.WriteLine(">> CHECKS <<");
-    Console.WriteLine($"Target Square: R{row}C{col} ({targetSquare})");
-    */
-    double obscuringTreeValue = -1;
-    for (int i = rowSize-1; i > row; i--)
+    var score = 0;
+    // "Stop if you reach an edge..."
+    if (col.Equals(colSize-1)) return score; // No trees to see
+
+    for (int i = col + 1; i < colSize; i++)
     {
-        obscuringTreeValue = forestList[i][col];
-        if (targetSquare <= obscuringTreeValue)
-        {
-            return false;
-        }
+        score++; // You can always see the next tree - but the one after? Perhaps not...!
+        var obscuringTreeValue = forestList[row][i];
+
+        //  "or at the first tree that is the same height or taller than the tree under consideration"
+        if (obscuringTreeValue >= targetSquare) return score;
     }
-    return true;
+    return score;
+}
+int CheckBottom(int row, int col, double targetSquare)
+{
+    var score = 0;
+    // "Stop if you reach an edge..."
+    if (row.Equals(rowSize-1)) return score; // No trees to see
+
+    for (int i = row + 1; i < rowSize; i++)
+    {
+        score++; // You can always see the next tree - but the one after? Perhaps not...!
+        var obscuringTreeValue = forestList[i][col];
+
+        //  "or at the first tree that is the same height or taller than the tree under consideration"
+        if (obscuringTreeValue >= targetSquare) return score;
+    }
+    return score;
 }
 
 
-bool CheckLeft(int row, int col, double targetSquare)
+int CheckLeft(int row, int col, double targetSquare)
 {
-    /*
-    Console.WriteLine(">> CHECKS <<");
-    Console.WriteLine($"Target Square: R{row}C{col} ({targetSquare})");
-    */
-    double obscuringTreeValue = -1;
-    for (int i = 0; i < col; i++)
+    var score = 0;
+    // "Stop if you reach an edge..."
+    if (col.Equals(0)) return score; // No trees to see
+
+    for (int i = col - 1; i > -1; i--)
     {
-        obscuringTreeValue = forestList[row][i];
-        if (targetSquare <= obscuringTreeValue)
-        {
-            return false;
-        }
+        score++; // You can always see the next tree - but the one after? Perhaps not...!
+        var obscuringTreeValue = forestList[row][i];
+
+        //  "or at the first tree that is the same height or taller than the tree under consideration"
+        if (obscuringTreeValue >= targetSquare) return score;
     }
-    return true;
+    return score;
 }
