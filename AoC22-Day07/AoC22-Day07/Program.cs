@@ -46,6 +46,7 @@ Becomes:
 using System.Collections;
 using System.Reflection;
 using System.Threading.Channels;
+using System.Xml;
 
 
 var path = Path.Combine(Directory.GetCurrentDirectory(), "AoC22-Day07-Input.csv");
@@ -56,6 +57,9 @@ var highestLevel = 0;
 
 var listOfDir = new List<Dir>();
 Dir currentDir = null;
+
+
+
 foreach (var line in file)
 {
     /*
@@ -143,16 +147,29 @@ for (int i = highestLevel; i >= 0; i--)
     }
 }
 
-// Remove any where the Size>=100000
-var grandTotal = 0;
-foreach (var dir in listOfDir.Where(x => x.Size <= 100000))
+
+var spaceCapacity = 70_000_000;
+Console.WriteLine($"Space Capacity: {spaceCapacity}");
+
+var spaceRequired = 30_000_000;
+Console.WriteLine($"Space Required: {spaceRequired}");
+// Outermost dir
+var spaceUsed = listOfDir.Find(x => x.Name.Equals("/"))!.Size;
+Console.WriteLine($"Space Used: {spaceUsed}");
+
+var spaceAvailable = spaceCapacity - spaceUsed;
+Console.WriteLine($"Space Available: {spaceAvailable}");
+
+var spaceDeficit = spaceRequired - spaceAvailable;
+Console.WriteLine($"Space Deficit: {spaceDeficit}");
+
+List<Dir> SortedList = listOfDir.OrderByDescending(o => o.Size).Where(o => o.Size >= spaceDeficit).ToList();
+
+foreach (var dir in SortedList)
 {
-    grandTotal += dir.Size;
+    Console.WriteLine(dir);
 }
-
-Console.WriteLine(grandTotal);
-
-// Too low: 1041286 // 1771828 // 1886043
+// 43_562_874
 
 
 internal class Dir
