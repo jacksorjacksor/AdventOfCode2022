@@ -35,15 +35,15 @@ With 16 trees visible on the edge and another 5 visible in the interior, a total
 // RC crawling!
 
 // Get size of thing
-var rowSize = 0;
 var colSize = 0;
+var rowSize = 0;
 foreach (var line in file)
 {
-    if (rowSize.Equals(0))
+    if (colSize.Equals(0))
     {
-        rowSize = line.Length;
+        colSize = line.Length;
     }
-    colSize++;
+    rowSize++;
 }
 
 Console.WriteLine($"Row: {rowSize}");
@@ -58,7 +58,7 @@ var forestList = new List<List<double>>();
 foreach (var line in file)
 {
     var forestRow = new List<double>();
-    for (var i = 0; i < rowSize; i++)
+    for (var i = 0; i < colSize; i++)
     {
         var val = line[i];
         forestRow.Add(char.GetNumericValue(line[i]));
