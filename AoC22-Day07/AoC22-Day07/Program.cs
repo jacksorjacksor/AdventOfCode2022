@@ -48,7 +48,7 @@ using System.Reflection;
 using System.Threading.Channels;
 
 
-var path = Path.Combine(Directory.GetCurrentDirectory(), "AoC22-Day07-SampleInput.csv");
+var path = Path.Combine(Directory.GetCurrentDirectory(), "AoC22-Day07-Input.csv");
 var file = File.ReadAllLines(path);
 
 var currentLevel = 0;
@@ -70,6 +70,7 @@ foreach (var line in file)
             {
                 case "cd ..":
                     currentLevel--;
+                    currentDir = currentDir?.Parent;
                     break;
 
                 case "cd /":
@@ -89,8 +90,6 @@ foreach (var line in file)
                 default:
                     currentLevel++;
                     highestLevel = UpdateHighestLevel(currentLevel);
-
-
 
                     currentDir = new Dir
                     {
@@ -134,14 +133,6 @@ int UpdateHighestLevel(int level)
     }
 }
 
-// 
-foreach (var dir in listOfDir)
-{
-    Console.WriteLine(dir);
-}
-
-
-Console.WriteLine("*** Adjusted ***");
 // Go back through the highest levels, add the values of their children to their Sizes
 
 for (int i = highestLevel; i >= 0; i--)
@@ -149,30 +140,27 @@ for (int i = highestLevel; i >= 0; i--)
     foreach (var dir in listOfDir.Where(x=> x.Level.Equals(i)))
     {
         if (dir.Parent != null) dir.Parent.Size += dir.Size;
-        Console.WriteLine(dir);
     }
 }
-
-
-Console.WriteLine("*****");
 
 // Remove any where the Size>=100000
 var grandTotal = 0;
 foreach (var dir in listOfDir.Where(x => x.Size <= 100000))
 {
-    Console.WriteLine(dir);
     grandTotal += dir.Size;
 }
 
 Console.WriteLine(grandTotal);
 
-// Too low: 1041286 // 1771828
+// Too low: 1041286 // 1771828 // 1886043
 
 
 internal class Dir
 {
     public string Name { set; get; }
     public Dir? Parent { set; get; }
+
+    public List<Dir>? Children {set; get; }
     public int Size { set; get; }
 
     public int Level { set; get; }
