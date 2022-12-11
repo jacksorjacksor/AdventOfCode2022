@@ -22,11 +22,11 @@ foreach (var line in file)
 {
     var splitLine = line.Split();
     var instruction = new Instruction() { direction = splitLine[0], numberOfMoves =int.Parse(splitLine[1]) };
-    Console.WriteLine("*");
-    Console.WriteLine($"Instruction: {instruction}");
+    // Console.WriteLine("*");
+    // Console.WriteLine($"Instruction: {instruction}");
     for (var i = 0; i < instruction.numberOfMoves; i++)
     {
-        Console.WriteLine("-");
+        // Console.WriteLine("-");
         // Parse the direction needed
         var instructionPosition = InstructionMovement(instruction.direction);
 
@@ -34,18 +34,26 @@ foreach (var line in file)
         // Add that to the head position and store it
         var newHeadPosition = new Position()
             { row = originalHeadPosition.row + instructionPosition.row, col = originalHeadPosition.col + instructionPosition.col };
-        Console.WriteLine($"Head: {originalHeadPosition}");
+        // Console.WriteLine($"Head: {originalHeadPosition}");
         // Add new position to list of HeadPositions
         listOfPositions[0].Add(newHeadPosition);
 
+        for (int j = 1; j < 10; j++)
+        {
+            var loopNewHeadPosition = listOfPositions[j - 1][moveCounter + 1];
+            var loopOriginalTailPosition = listOfPositions[j][moveCounter];
+            var loopOriginalHeadPosition = listOfPositions[j - 1][moveCounter];
 
-        // Work out wtf the tail has to do
-        var newTailPosition = TailPositionAdjustment(newHeadPosition, listOfPositions[1][moveCounter], originalHeadPosition);
+
+            // Work out wtf the tail has to do
+            var newTailPosition = TailPositionAdjustment(loopNewHeadPosition, loopOriginalTailPosition, loopOriginalHeadPosition);
 
 
-        Console.WriteLine($"Tail: {newTailPosition}");
-        // Add new position to list of TailPositions
-        listOfPositions[1].Add(newTailPosition);
+            // Console.WriteLine($"Tail: {newTailPosition}");
+            // Add new position to list of TailPositions
+            listOfPositions[j].Add(newTailPosition);
+        }
+
 
         moveCounter++;
     }
@@ -54,11 +62,11 @@ foreach (var line in file)
 Console.WriteLine("*****");
 
 // https://stackoverflow.com/questions/4991728/how-to-get-a-distinct-list-from-a-list-of-objects
-var listOfUniqueTailPositions = listOfPositions[1].GroupBy(elem => new { elem.row, elem.col })
+var listOfUniqueTailPositions = listOfPositions[9].GroupBy(elem => new { elem.row, elem.col })
     .Select(group => group.First());
 
 Console.WriteLine(listOfUniqueTailPositions.Count());
-
+// 4842 - too high
 
 /*foreach (var item in listOfUniqueTailPositions)
 {
@@ -101,11 +109,11 @@ Position InstructionMovement(string direction)
 Position TailPositionAdjustment(Position head, Position tail, Position originalHeadPosition)
 {
     var difference = new Position { row = head.row - tail.row, col = head.col - tail.col };
-    Console.WriteLine($"Diff: {difference}");
+    // Console.WriteLine($"Diff: {difference}");
     // Close enough, within 1 square on row and col
     if (difference.row is >= -1 and <= 1 && difference.col is >= -1 and <= 1)
     {
-        Console.WriteLine("> 1. don't move");
+        // Console.WriteLine("> 1. don't move");
         // Don't need to move
         return tail;
     }
@@ -118,12 +126,12 @@ Position TailPositionAdjustment(Position head, Position tail, Position originalH
         {
             case >= 2:
             {
-                Console.WriteLine("2. Move right");
+                // Console.WriteLine("2. Move right");
                 return new Position { row = tail.row, col=tail.col+1};
             }
             case <= -2:
             {
-                Console.WriteLine("3. Move left");
+                // Console.WriteLine("3. Move left");
                 return new Position { row = tail.row, col = tail.col - 1 };
             }
         }
@@ -136,19 +144,19 @@ Position TailPositionAdjustment(Position head, Position tail, Position originalH
         {
             case >= 2:
             {
-                Console.WriteLine("4. Move down");
+                // Console.WriteLine("4. Move down");
                 return new Position { row = tail.row + 1, col = tail.col };
             }
             case <= -2:
             {
-                Console.WriteLine("5. Move up");
+                // Console.WriteLine("5. Move up");
                 return new Position() { row = tail.row - 1, col = tail.col };
             }
         }
     }
     // Case: Row is 2+ apart, col is 2+ apart
     // Tail moves to previous head
-        Console.WriteLine("6. Go to original head");
+        // Console.WriteLine("6. Go to original head");
         return originalHeadPosition;
     }
 
