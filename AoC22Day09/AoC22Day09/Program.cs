@@ -1,8 +1,6 @@
 ﻿// Data
-
-using System.Data;
 // Get the data
-var path = Path.Join(Directory.GetCurrentDirectory(), "AoC22Day09Sample1.csv");
+var path = Path.Join(Directory.GetCurrentDirectory(), "AoC22Day09Input.csv");
 var file = File.ReadAllLines(path);
 
 // Make storage lists - this should probably be list of lists?
@@ -166,8 +164,46 @@ Position TailPositionAdjustment(Position head, Position tail, Position originalH
     // Case: Row is 2+ apart, col is 2+ apart
     // Tail moves to previous head
         // Console.WriteLine("6. Go to original head");
-        return originalHeadPosition;
+        return DiagonalMovement(tail,difference);
     }
+
+Position DiagonalMovement( Position tail, Position difference)
+{
+    // Otherwise, if the head and tail aren't touching and aren't in the same row or column,
+    // the tail always moves one step diagonally to keep up
+
+    var adjustRow = 0;
+    var adjustCol = 0;
+
+    // UR (-+)
+    if (difference.row<0 && difference.col>0)
+    {
+        adjustRow = -1;
+        adjustCol = 1;
+    }
+
+    // DR (++)
+    else if (difference.row > 0 && difference.col > 0)
+    {
+        adjustRow = 1;
+        adjustCol = 1;
+    }
+
+    // DL (+-)
+    else if (difference.row > 0 && difference.col < 0)
+    {
+        adjustRow = 1;
+        adjustCol = -1;
+    }
+    // UL (--)
+    else if (difference.row < 0 && difference.col < 0)
+    {
+        adjustRow = -1;
+        adjustCol = -1;
+    }
+    return new Position { row = tail.row + adjustRow, col = tail.col + adjustCol };
+}
+
 
 
 class Position
