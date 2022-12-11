@@ -1,18 +1,22 @@
 ﻿// Data
 
 using System.Data;
-
+// Get the data
 var path = Path.Join(Directory.GetCurrentDirectory(), "AoC22Day09Input.csv");
 var file = File.ReadAllLines(path);
 
-var listOfHeadPositions = new List<Position>();
-var listOfTailPositions = new List<Position>();
+// Make storage lists - this should probably be list of lists?
+var listOfPositions = new List<List<Position>>();
 
-var headPosition = new Position() { row = 0, col = 0 };
-var tailPosition = new Position() { row = 0, col = 0 };
+// listOfPositions is a list of all 10 points, and stores their movements.
+// This can be used for "originalHeadPosition" values
 
-listOfHeadPositions.Add(headPosition);
-listOfTailPositions.Add(tailPosition);
+for (int i = 0; i < 10; i++)
+{
+    listOfPositions.Add(new List<Position>() { new Position() { row = 0, col = 0 } });
+}
+
+var moveCounter = 0;
 
 foreach (var line in file)
 {
@@ -25,26 +29,32 @@ foreach (var line in file)
         Console.WriteLine("-");
         // Parse the direction needed
         var instructionPosition = InstructionMovement(instruction.direction);
-        var originalHeadPosition = headPosition;
+
+        var originalHeadPosition = listOfPositions[0][moveCounter];
         // Add that to the head position and store it
-        headPosition = new Position()
-            { row = headPosition.row + instructionPosition.row, col = headPosition.col + instructionPosition.col };
-        Console.WriteLine($"Head: {headPosition}");
+        var newHeadPosition = new Position()
+            { row = originalHeadPosition.row + instructionPosition.row, col = originalHeadPosition.col + instructionPosition.col };
+        Console.WriteLine($"Head: {originalHeadPosition}");
         // Add new position to list of HeadPositions
-        listOfHeadPositions.Add(headPosition);
+        listOfPositions[0].Add(newHeadPosition);
+
 
         // Work out wtf the tail has to do
-        tailPosition = TailPositionAdjustment(headPosition, tailPosition, originalHeadPosition);
-        Console.WriteLine($"Tail: {tailPosition}");
+        var newTailPosition = TailPositionAdjustment(newHeadPosition, listOfPositions[1][moveCounter], originalHeadPosition);
+
+
+        Console.WriteLine($"Tail: {newTailPosition}");
         // Add new position to list of TailPositions
-        listOfTailPositions.Add(tailPosition);
+        listOfPositions[1].Add(newTailPosition);
+
+        moveCounter++;
     }
 }
 
 Console.WriteLine("*****");
 
 // https://stackoverflow.com/questions/4991728/how-to-get-a-distinct-list-from-a-list-of-objects
-var listOfUniqueTailPositions = listOfTailPositions.GroupBy(elem => new { elem.row, elem.col })
+var listOfUniqueTailPositions = listOfPositions[1].GroupBy(elem => new { elem.row, elem.col })
     .Select(group => group.First());
 
 Console.WriteLine(listOfUniqueTailPositions.Count());
@@ -99,7 +109,7 @@ Position TailPositionAdjustment(Position head, Position tail, Position originalH
         // Don't need to move
         return tail;
     }
-    
+
     // Case: Same row, col is 2+ apart
     if (difference.row.Equals(0) && difference.col is >= 2 or <= -2)
     {
