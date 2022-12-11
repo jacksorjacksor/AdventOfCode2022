@@ -2,7 +2,7 @@
 
 using System.Data;
 // Get the data
-var path = Path.Join(Directory.GetCurrentDirectory(), "AoC22Day09Input.csv");
+var path = Path.Join(Directory.GetCurrentDirectory(), "AoC22Day09Sample1.csv");
 var file = File.ReadAllLines(path);
 
 // Make storage lists - this should probably be list of lists?
@@ -22,11 +22,11 @@ foreach (var line in file)
 {
     var splitLine = line.Split();
     var instruction = new Instruction() { direction = splitLine[0], numberOfMoves =int.Parse(splitLine[1]) };
-    // Console.WriteLine("*");
-    // Console.WriteLine($"Instruction: {instruction}");
+    Console.WriteLine("*");
+    Console.WriteLine($"Instruction: {instruction}");
     for (var i = 0; i < instruction.numberOfMoves; i++)
     {
-        // Console.WriteLine("-");
+        Console.WriteLine("-");
         // Parse the direction needed
         var instructionPosition = InstructionMovement(instruction.direction);
 
@@ -54,15 +54,24 @@ foreach (var line in file)
             listOfPositions[j].Add(newTailPosition);
         }
 
-
         moveCounter++;
+
+        Console.WriteLine("Current State:");
+
+        for (int k = 0; k < 10; k++)
+        {
+            var index = k.Equals(0) ? "H" : k.ToString();
+            Console.WriteLine($"{index}: {listOfPositions[k][moveCounter]}");
+        }
     }
+
+
 }
 
 Console.WriteLine("*****");
 
 // https://stackoverflow.com/questions/4991728/how-to-get-a-distinct-list-from-a-list-of-objects
-var listOfUniqueTailPositions = listOfPositions[9].GroupBy(elem => new { elem.row, elem.col })
+var listOfUniqueTailPositions = listOfPositions[10-1].GroupBy(elem => new { elem.row, elem.col })
     .Select(group => group.First());
 
 Console.WriteLine(listOfUniqueTailPositions.Count());

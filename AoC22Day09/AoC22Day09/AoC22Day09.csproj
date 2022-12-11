@@ -8,7 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="AoC22Day09Sample.csv">
+    <None Update="AoC22Day09Sample1.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="AoC22Day09Sample2.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="AoC22Day09Input.csv">
