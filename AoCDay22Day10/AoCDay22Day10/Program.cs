@@ -7,10 +7,8 @@ var file = File.ReadAllLines(path);
 
 var register = 1;
 var cycle = 0;
-var signalStrength = 0;
-
-var listOfCyclesToCheck = new List<int> { 20, 60, 100, 140, 180, 220 };
-
+var spriteCentre = 0;
+var listOfPixels = new List<Pixel>();
 /*
     addx V takes two cycles to complete. After two cycles, the X register is increased by the value V. (V can be negative.)
     noop takes one cycle to complete. It has no other effect.
@@ -20,7 +18,7 @@ foreach (var line in file)
 {
     if (line.Equals("noop"))
     {
-        CycleUpdate();
+        CycleUpdate(line);
     }
     else // addx
     {
@@ -28,7 +26,7 @@ foreach (var line in file)
 
         for (int i = 0; i < 2; i++)
         {
-            CycleUpdate();
+            CycleUpdate(line);
         }
 
         // Update
@@ -36,13 +34,50 @@ foreach (var line in file)
     }
 }
 
-Console.WriteLine(signalStrength);
+// Creates output string of "#" and "."
+string output = listOfPixels.Aggregate("", (current, pixel) => current + pixel.symbol);
+Console.WriteLine(output);
+Console.WriteLine("****");
+Console.WriteLine(output.Substring(0,40));
+Console.WriteLine(output.Substring(40,40));
+Console.WriteLine(output.Substring(80,40));
+Console.WriteLine(output.Substring(120,40));
+Console.WriteLine(output.Substring(160,40));
+Console.WriteLine(output.Substring(200,40));
 
-void CycleUpdate()
+
+void CycleUpdate(string line)
 {
     cycle++;
-    if (listOfCyclesToCheck.Contains(cycle))
+    var adjustedCycle = cycle % 40;
+    var isPixelFound = adjustedCycle >= register && adjustedCycle <= register + 2;
+    listOfPixels.Add(new Pixel()
     {
-        signalStrength += register * cycle;
-    }
+        cycle = cycle,
+        lit = isPixelFound,
+        symbol = isPixelFound ? "#" : "."
+    });
+
+
+    Console.WriteLine("*********");
+    /*Console.WriteLine($"" +
+                      $"Cycle: {cycle}\t" +
+                      $"Adjusted: {adjustedCycle}\t" +
+                      $"Register: {register}\t" +
+                      $"Found: {isPixelFound}"
+                      );*/
+
+    Console.WriteLine($"Start cycle\t {cycle}: begin executing {line}");
+    Console.WriteLine($"During cycle\t {cycle}: CRT draws pixel in position {register} (range: {register-1} - {register+1})");
+    Console.WriteLine($"Current CRT row:\t{listOfPixels.Aggregate("", (current, pixel) => current + pixel.symbol)}");
+
+    // Check here if the pixel is +/- 1 of register
+
+}
+
+class Pixel
+{
+    public int cycle { get; set; }
+    public bool lit { get; set; }
+    public string symbol { get; set; }
 }
