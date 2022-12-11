@@ -175,9 +175,11 @@ foreach (var dir in SortedList)
 internal class Dir
 {
     public string Name { set; get; }
+    
     public Dir? Parent { set; get; }
 
     public List<Dir>? Children {set; get; }
+    
     public int Size { set; get; }
 
     public int Level { set; get; }
